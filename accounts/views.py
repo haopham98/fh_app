@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from .serializers import UserProfileSerializer
 from rest_framework.response import Response
 from .models import UserProfile
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -83,8 +84,20 @@ def register(request):
                 return Response({'error': 'Username already exists.'}, status=400)
             if UserProfile.objects.filter(email=email).exists():
                 return Response({'error': 'Email already exists.'}, status=400)
-            user = UserProfile.objects.create(username=username, email=email, password=password, bio=bio, age=age)
-            user.save()
+            user = UserProfile.objects.create_user(username=username, email=email, password=password, bio=bio, age=age)
+            return Response({'message': 'User registered successfully.'}, status=201)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
         return Response({'message': 'User registered successfully.'}, status=201)
+
+# def login(request):
+#     if request.method == 'POST':
+#         username = request.data.get('username')
+#         password = request.data.get('password')
+#         if password is None or username is None:
+#             return Response({'error': 'Username and password are required.'}, status=400)
+#         try:
+#             user = UserProfile.objects.get(username=username, password=password)
+#             if user:
+                
+            
