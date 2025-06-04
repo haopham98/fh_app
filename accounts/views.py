@@ -4,10 +4,13 @@ from .serializers import UserProfileSerializer
 from rest_framework.response import Response
 from .models import UserProfile
 from django.contrib.auth.models import User
-
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def user_list(request):
     """
     List all users or create a new user.
@@ -39,12 +42,13 @@ def create_user(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def user_detail(request, pk):
     if request.method == 'GET':
-        try:
-            user = UserProfile.objects.get(pk=pk)
-            serializer = UserProfileSerializer(user)
-            return Response(serializer.data)
-        except UserProfile.DoesNotExist:
-            return Response({'error': 'User not found'}, status=404)
+        # try:
+            #user = UserProfile.objects.get(pk=pk)
+        user = get_object_or_404(UserProfile, pk=pk)
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
+        # except UserProfile.DoesNotExist:
+        #     return Response({'error': 'User not found'}, status=404)
         
     if request.method == 'PUT':
         try:
@@ -56,16 +60,20 @@ def user_detail(request, pk):
 
                 return Response(serializer.data, status=200)
             return Response(serializer.errors, status=400)
-        except UserProfile.DoesNotExist:
+        except Exception as e:
+            print(f"Error updating user: {e}")
             return Response({'error': 'User not found'}, status=404)
     
     if request.method == 'DELETE':
-        try:
-            user = UserProfile.objects.get(pk=pk)
-            user.delete()
-            return Response({'message': 'User deleted successfully'}, status=204)
-        except UserProfile.DoesNotExist:
-            return Response({'error': 'User not found'}, status=404)
+        # try:
+        #     user = UserProfile.objects.get(pk=pk)
+        #     user.delete()
+        #     return Response({'message': 'User deleted successfully'}, status=204)
+        # except UserProfile.DoesNotExist:
+        #     return Response({'error': 'User not found'}, status=404)
+        user = get_object_or_404(UserProfile, pk=pk)
+        serializer = UserProfileSerializer(user)
+        return Response({'message': 'User deleted successfully'}, status=204)
 
     return Response({'error': 'Method not allowed'}, status=405)
 
@@ -90,14 +98,5 @@ def register(request):
             return Response({'error': str(e)}, status=500)
         return Response({'message': 'User registered successfully.'}, status=201)
 
-# def login(request):
-#     if request.method == 'POST':
-#         username = request.data.get('username')
-#         password = request.data.get('password')
-#         if password is None or username is None:
-#             return Response({'error': 'Username and password are required.'}, status=400)
-#         try:
-#             user = UserProfile.objects.get(username=username, password=password)
-#             if user:
                 
             
