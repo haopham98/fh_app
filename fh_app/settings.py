@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'accounts',
+    'food',
     'fh_app'  # Custom app for user profiles
 ]
 
