@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Food List{% endblock %}
+
+{% block content %}
+<h2>Food List</h2>
+<a href="/foods/add/" class="btn btn-primary mb-3">Add Food</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Protein</th>
+            <th>Fat</th>
+            <th>Carbs</th>
+            <th>Vitamin</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for food in page_obj %}
+        <tr>
+            <td>{{ food.name }}</td>
+            <td>{{ food.protein }}</td>
+            <td>{{ food.fat }}</td>
+            <td>{{ food.carbs }}</td>
+            <td>{{ food.vitamin }}</td>
+            <td><a href="/foods/edit/{{ food.id }}/" class="btn btn-sm btn-warning">Edit</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No food items found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<nav>
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      </li>
+    {% endif %}
+
+    <li class="page-item disabled">
+      <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    </li>
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endblock %}
